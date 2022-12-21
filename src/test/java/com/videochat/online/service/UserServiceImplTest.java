@@ -1,5 +1,6 @@
 package com.videochat.online.service;
 
+import com.videochat.online.auth.dto.SignupRequestDTO;
 import com.videochat.online.user.dto.UserInfoDTO;
 import com.videochat.online.user.entity.User;
 import com.videochat.online.user.exception.UserNotFoundException;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -27,6 +29,8 @@ public class UserServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     User user;
 
@@ -66,5 +70,28 @@ public class UserServiceImplTest {
         assertThrows(UserNotFoundException.class, () -> {
             userService.getUserInfo(userId);
         });
+    }
+
+    @Test
+    public void createUser_test(){
+        // given
+        SignupRequestDTO signupRequestDTO = new SignupRequestDTO(
+                user.getEmail(),
+                user.getPassword(),
+                user.getUsername(),
+                user.getNickname()
+        );
+        String encodingPassword = "encodingPassword";
+        given(passwordEncoder.encode(any())).willReturn(encodingPassword);
+
+        signupRequestDTO.encoding(passwordEncoder);
+        given(userRepository.save(any())).willReturn(signupRequestDTO.toEntity());
+
+        // when
+        User saveUser = userService.createUser(signupRequestDTO);
+
+        // then
+        assertThat(saveUser.getEmail()).isEqualTo(signupRequestDTO.getEmail());
+        assertThat(saveUser.getPassword()).isEqualTo(encodingPassword);
     }
 }

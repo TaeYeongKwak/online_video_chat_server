@@ -20,7 +20,6 @@ public class UserRepositoryTest {
     @BeforeEach
     public void setUp(){
         user = User.builder()
-                .userId(1L)
                 .email("test@test.com")
                 .password("testPassword")
                 .nickname("testNickname")
@@ -41,6 +40,15 @@ public class UserRepositoryTest {
         // then
         assertThat(findUser.getUserId()).isEqualTo(userId);
         assertThat(findUser.getEmail()).isEqualTo(saveUser.getEmail());
+    }
+
+    @Test
+    public void save_test(){
+        // when
+        User saveUser = userRepository.save(user);
+
+        // then
+        assertThat(saveUser.getEmail()).isEqualTo(user.getEmail());
     }
 
 }

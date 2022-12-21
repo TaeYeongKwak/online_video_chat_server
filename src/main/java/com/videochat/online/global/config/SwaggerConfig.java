@@ -31,7 +31,8 @@ public class SwaggerConfig {
                 .paths(PathSelectors.any())
                 .build()
                 .tags(
-                        new Tag("1. User", "회원 API")
+                        new Tag("1. User", "회원 API"),
+                        new Tag("2. Auth", "인증 API")
                 );
     }
 
